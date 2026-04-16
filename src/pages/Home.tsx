@@ -132,7 +132,7 @@ export default function Home() {
       handleFirestoreError(error, OperationType.GET, 'settings/laporan');
     });
 
-    const categories: Kategori[] = ['SD Putra', 'SD Putri', 'SMP Putra', 'SMP Putri'];
+    const categories: Kategori[] = ['LOMBA REGU', 'LOMBA INDIVIDU', 'SMP Putra', 'SMP Putri'];
     const unsubRekaps = categories.map(cat => 
       onSnapshot(doc(db, 'settings', `rekap_${cat.replace(' ', '_')}`), (s) => {
         if (s.exists()) {
@@ -473,7 +473,7 @@ export default function Home() {
     });
   }, [summaries, activeKategori, searchQuery]);
 
-  const categories: (Kategori | 'Semua')[] = ['Semua', 'SD Putra', 'SD Putri', 'SMP Putra', 'SMP Putri'];
+  const categories: (Kategori | 'Semua')[] = ['Semua', 'LOMBA REGU', 'LOMBA INDIVIDU', 'SMP Putra', 'SMP Putri'];
 
   const RekapTable = ({ grid }: { grid: any[][] }) => {
     const parser = new Parser();
@@ -539,9 +539,12 @@ export default function Home() {
               <tr className="bg-gray-50/50 text-gray-500 uppercase text-[9px] font-black tracking-widest border-b border-gray-100">
                 {grid[0]?.map((cell, i) => {
                   const isFreeze = cell.value?.toString().toLowerCase().includes('tenda') || i === 0 || i === 1;
+                  const headerValue = cell.value?.toString().toLowerCase() || "";
+                  const isNameOrPangkalan = headerValue.includes('nama') || headerValue.includes('pangkalan');
                   return (
                     <th key={i} className={cn(
-                      "px-6 py-3 border-r border-gray-100 last:border-r-0 text-center whitespace-nowrap",
+                      "px-6 py-3 border-r border-gray-100 last:border-r-0 whitespace-nowrap",
+                      isNameOrPangkalan ? "text-left" : "text-center",
                       isFreeze && "freeze-pane bg-gray-50/90"
                     )}>
                       {cell.value}
@@ -555,9 +558,12 @@ export default function Home() {
                 <tr key={rIdx} className="hover:bg-gray-50/80 transition-all group">
                   {row.map((cell, cIdx) => {
                     const isFreeze = grid[0]?.[cIdx]?.value?.toString().toLowerCase().includes('tenda') || cIdx === 0 || cIdx === 1;
+                    const headerValue = grid[0]?.[cIdx]?.value?.toString().toLowerCase() || "";
+                    const isNameOrPangkalan = headerValue.includes('nama') || headerValue.includes('pangkalan');
                     return (
                       <td key={cIdx} className={cn(
-                        "px-6 py-3 border-r border-gray-100 last:border-r-0 text-center whitespace-nowrap",
+                        "px-6 py-3 border-r border-gray-100 last:border-r-0 whitespace-nowrap",
+                        isNameOrPangkalan ? "text-left" : "text-center",
                         isFreeze && "freeze-pane"
                       )}>
                         <span className={cn(
@@ -904,23 +910,22 @@ export default function Home() {
                 </div>
               )}
 
-              {[
-                { id: 'SD Putra', label: 'Putra SD/MI' },
-                { id: 'SMP Putra', label: 'Putra SMP/MTS' },
-                { id: 'SD Putri', label: 'Putri SD/MI' },
-                { id: 'SMP Putri', label: 'Putri SMP/MTS' }
-              ].map(cat => {
-                const grid = rekapData[cat.id];
+              {categories.slice(1).map(cat => {
+                const grid = rekapData[cat as Kategori];
                 if (!grid || grid.length <= 1) return null;
 
                 return (
-                  <div key={cat.id} className="space-y-8">
+                  <div key={cat} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="flex items-center gap-6 px-4">
                       <div className="h-1 w-12 bg-black rounded-full"></div>
-                      <h3 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">{cat.label}</h3>
+                      <h3 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
+                        {cat === 'LOMBA REGU' ? 'LOMBA REGU' : 
+                         cat === 'LOMBA INDIVIDU' ? 'LOMBA INDIVIDU' : 
+                         cat === 'SMP Putra' ? 'PUTRA SMP/MTS' : 'PUTRI SMP/MTS'}
+                      </h3>
                       <div className="h-px flex-grow bg-gray-100"></div>
                       <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-4 py-2 rounded-full border border-gray-100">
-                        {grid.slice(1).filter(row => row[0]?.value && !isNaN(Number(row[0].value))).length} Regu
+                        {grid.slice(1).filter(row => row[0]?.value && row[0].value.toString().trim() !== "").length} Regu
                       </span>
                     </div>
                     
@@ -929,7 +934,7 @@ export default function Home() {
                 );
               })}
 
-              {Object.keys(rekapData).length === 0 && (
+              {(!rekapData || Object.values(rekapData).every((grid: any) => !grid || grid.length <= 1)) && (
                 <div className="py-32 text-center space-y-6">
                   <div className="bg-gray-50 h-24 w-24 rounded-full flex items-center justify-center mx-auto border border-gray-100">
                     <FileSpreadsheet className="h-12 w-12 text-gray-200" />

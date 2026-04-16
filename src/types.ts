@@ -1,4 +1,4 @@
-export type Kategori = 'SD Putra' | 'SD Putri' | 'SMP Putra' | 'SMP Putri';
+export type Kategori = 'LOMBA REGU' | 'LOMBA INDIVIDU' | 'SMP Putra' | 'SMP Putri';
 
 export interface Regu {
   id: string;

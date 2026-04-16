@@ -144,8 +144,8 @@ export default function AdminDashboard() {
         const initialConfig: Partial<AppConfig> = {
           isLocked: false,
           lockedCategories: {
-            'SD Putra': false,
-            'SD Putri': false,
+            'LOMBA REGU': false,
+            'LOMBA INDIVIDU': false,
             'SMP Putra': false,
             'SMP Putri': false
           },
@@ -263,11 +263,17 @@ Kamabigus`
     }
   };
 
+  // Use a ref to keep the parser stable while still accessing the latest data
+  const spreadsheetDataRef = useRef(spreadsheetData);
+  useEffect(() => {
+    spreadsheetDataRef.current = spreadsheetData;
+  }, [spreadsheetData]);
+
   const formulaParser = React.useMemo(() => {
     const parser = new Parser();
     parser.on('callCellValue', (cellCoord, done) => {
       const { row, column } = cellCoord;
-      const cell = spreadsheetData[row.index]?.[column.index];
+      const cell = spreadsheetDataRef.current[row.index]?.[column.index];
       let value = cell?.value;
       if (typeof value === 'string' && value.startsWith('=')) {
         const result = parser.parse(value.substring(1));
@@ -282,7 +288,7 @@ Kamabigus`
       for (let row = startCellCoord.row.index; row <= endCellCoord.row.index; row++) {
         const rowData: any[] = [];
         for (let col = startCellCoord.column.index; col <= endCellCoord.column.index; col++) {
-          const cell = spreadsheetData[row]?.[col];
+          const cell = spreadsheetDataRef.current[row]?.[col];
           let value = cell?.value;
           if (typeof value === 'string' && value.startsWith('=')) {
             const result = parser.parse(value.substring(1));
@@ -307,7 +313,7 @@ Kamabigus`
     });
 
     return parser;
-  }, [spreadsheetData]);
+  }, []); // Stable parser
 
   const evaluatedData = React.useMemo(() => {
     if (!spreadsheetData || !Array.isArray(spreadsheetData)) return [];
@@ -322,8 +328,23 @@ Kamabigus`
     );
   }, [spreadsheetData, formulaParser]);
 
-  const handleSpreadsheetChange = (newData: any) => {
-    setSpreadsheetData(newData);
+  const handleSpreadsheetChange = (newData: any[][]) => {
+    // Strip displayValue to keep state clean and prevent loops
+    const cleanData = newData.map(row => 
+      row.map(cell => {
+        if (!cell) return { value: "" };
+        const { displayValue, ...rest } = cell;
+        return rest;
+      })
+    );
+    
+    // Only update if the actual values changed to prevent infinite loops
+    const currentDataStr = JSON.stringify(spreadsheetData);
+    const newDataStr = JSON.stringify(cleanData);
+    
+    if (currentDataStr !== newDataStr) {
+      setSpreadsheetData(cleanData);
+    }
   };
 
   const addRow = () => {
@@ -1234,7 +1255,7 @@ Kamabigus`
             
             <div className="p-8 space-y-8">
               <div className="flex flex-wrap gap-3">
-                {(['SD Putra', 'SD Putri', 'SMP Putra', 'SMP Putri'] as Kategori[]).map((kat) => (
+                {(['LOMBA REGU', 'LOMBA INDIVIDU', 'SMP Putra', 'SMP Putri'] as Kategori[]).map((kat) => (
                   <button
                     key={kat}
                     onClick={() => setSelectedKategori(kat)}
@@ -1253,23 +1274,30 @@ Kamabigus`
               {subTab === 'rekap' ? (
                 <div className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden shadow-sm">
                   <div className="p-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
-                    <div className="flex gap-2">
-                      <button onClick={addRow} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-xs font-bold flex items-center gap-2">
-                        <Plus className="h-3 w-3" /> Baris
-                      </button>
-                      <button onClick={removeRow} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all text-xs font-bold flex items-center gap-2">
-                        <Trash2 className="h-3 w-3" /> Baris
-                      </button>
-                      <button onClick={addColumn} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-xs font-bold flex items-center gap-2">
-                        <Plus className="h-3 w-3" /> Kolom
-                      </button>
-                      <button onClick={removeColumn} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all text-xs font-bold flex items-center gap-2">
-                        <Trash2 className="h-3 w-3" /> Kolom
-                      </button>
-                      <label className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-xs font-bold flex items-center gap-2 cursor-pointer">
-                        <Upload className="h-3 w-3" /> Import Excel
-                        <input type="file" className="hidden" onChange={handleImportExcelToSpreadsheet} accept=".xlsx, .xls" />
-                      </label>
+                    <div className="flex items-center gap-4">
+                      <div className="flex gap-2">
+                        <button onClick={addRow} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-xs font-bold flex items-center gap-2">
+                          <Plus className="h-3 w-3" /> Baris
+                        </button>
+                        <button onClick={removeRow} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all text-xs font-bold flex items-center gap-2">
+                          <Trash2 className="h-3 w-3" /> Baris
+                        </button>
+                        <button onClick={addColumn} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-xs font-bold flex items-center gap-2">
+                          <Plus className="h-3 w-3" /> Kolom
+                        </button>
+                        <button onClick={removeColumn} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all text-xs font-bold flex items-center gap-2">
+                          <Trash2 className="h-3 w-3" /> Kolom
+                        </button>
+                        <label className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-xs font-bold flex items-center gap-2 cursor-pointer">
+                          <Upload className="h-3 w-3" /> Import Excel
+                          <input type="file" className="hidden" onChange={handleImportExcelToSpreadsheet} accept=".xlsx, .xls" />
+                        </label>
+                      </div>
+                      <div className="h-4 w-px bg-gray-200 hidden sm:block"></div>
+                      <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-full">
+                        <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Live on Frontend</span>
+                      </div>
                     </div>
                     <button 
                       onClick={handleSaveSpreadsheet}
