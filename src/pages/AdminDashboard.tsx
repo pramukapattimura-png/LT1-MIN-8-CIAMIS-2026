@@ -864,16 +864,39 @@ Kamabigus`
                 </button>
 
                 <div className="space-y-4 pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <div className="h-1 w-4 bg-black rounded-full"></div>
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Sambutan 1 (Gambar URL)</label>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="h-1 w-4 bg-black rounded-full"></div>
+                      <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Sambutan 1 (Gambar)</label>
+                    </div>
+                    <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2">
+                      <Upload className="h-3 w-3" /> Upload
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            try {
+                              setToast({ message: 'Mengunggah gambar...', type: 'info' });
+                              const url = await uploadToCloudinary(file);
+                              setAboutImage(url);
+                              setToast({ message: 'Gambar berhasil diunggah!', type: 'success' });
+                            } catch (err: any) {
+                              alert(err.message);
+                            }
+                          }
+                        }}
+                      />
+                    </label>
                   </div>
                   <input 
                     type="text"
                     value={aboutImage}
                     onChange={(e) => setAboutImage(e.target.value)}
                     className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 text-black text-sm outline-none focus:border-black transition-all"
-                    placeholder="Contoh: https://i.ibb.co/image.jpg (Gunakan Direct Link)"
+                    placeholder="URL Gambar atau gunakan tombol Upload..."
                   />
                 </div>
 
@@ -889,16 +912,39 @@ Kamabigus`
                 </div>
 
                 <div className="space-y-4 pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <div className="h-1 w-4 bg-gray-600 rounded-full"></div>
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Sambutan 2 (Gambar URL)</label>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="h-1 w-4 bg-gray-600 rounded-full"></div>
+                      <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest">Sambutan 2 (Gambar)</label>
+                    </div>
+                    <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2">
+                      <Upload className="h-3 w-3" /> Upload
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            try {
+                              setToast({ message: 'Mengunggah gambar...', type: 'info' });
+                              const url = await uploadToCloudinary(file);
+                              setAboutImage2(url);
+                              setToast({ message: 'Gambar berhasil diunggah!', type: 'success' });
+                            } catch (err: any) {
+                              alert(err.message);
+                            }
+                          }
+                        }}
+                      />
+                    </label>
                   </div>
                   <input 
                     type="text"
                     value={aboutImage2}
                     onChange={(e) => setAboutImage2(e.target.value)}
                     className="w-full bg-gray-50 border border-gray-100 rounded-2xl p-4 text-black text-sm outline-none focus:border-black transition-all"
-                    placeholder="Contoh: https://i.ibb.co/image.jpg (Gunakan Direct Link)"
+                    placeholder="URL Gambar atau gunakan tombol Upload..."
                   />
                 </div>
 
