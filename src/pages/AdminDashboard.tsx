@@ -263,56 +263,56 @@ Kamabigus`
     }
   };
 
-  const formulaParser = new Parser();
-  formulaParser.on('callCellValue', (cellCoord, done) => {
-    const { row, column } = cellCoord;
-    const cell = spreadsheetData[row.index]?.[column.index];
-    let value = cell?.value;
-    if (typeof value === 'string' && value.startsWith('=')) {
-      const result = formulaParser.parse(value.substring(1));
-      done(result.error ? 0 : result.result);
-    } else {
-      done(Number(value) || value || 0);
-    }
-  });
-
-  formulaParser.on('callRangeValue', (startCellCoord, endCellCoord, done) => {
-    const fragment: any[] = [];
-    for (let row = startCellCoord.row.index; row <= endCellCoord.row.index; row++) {
-      const rowData: any[] = [];
-      for (let col = startCellCoord.column.index; col <= endCellCoord.column.index; col++) {
-        const cell = spreadsheetData[row]?.[col];
-        let value = cell?.value;
-        if (typeof value === 'string' && value.startsWith('=')) {
-          const result = formulaParser.parse(value.substring(1));
-          rowData.push(result.error ? 0 : result.result);
-        } else {
-          rowData.push(Number(value) || value || 0);
-        }
+  const formulaParser = React.useMemo(() => {
+    const parser = new Parser();
+    parser.on('callCellValue', (cellCoord, done) => {
+      const { row, column } = cellCoord;
+      const cell = spreadsheetData[row.index]?.[column.index];
+      let value = cell?.value;
+      if (typeof value === 'string' && value.startsWith('=')) {
+        const result = parser.parse(value.substring(1));
+        done(result.error ? 0 : result.result);
+      } else {
+        done(Number(value) || value || 0);
       }
-      fragment.push(rowData);
-    }
-    done(fragment);
-  });
+    });
 
-  // Add RANK function support
-  formulaParser.setFunction('RANK', (params) => {
-    if (params.length < 2) return 0;
-    const value = params[0];
-    const range = params[1]; // This will be the fragment from callRangeValue
-    
-    if (!Array.isArray(range)) return 0;
-    
-    // Flatten range and filter numbers
-    const values = range.flat().filter(v => typeof v === 'number').sort((a, b) => b - a);
-    const rank = values.indexOf(value) + 1;
-    return rank > 0 ? rank : 0;
-  });
+    parser.on('callRangeValue', (startCellCoord, endCellCoord, done) => {
+      const fragment: any[] = [];
+      for (let row = startCellCoord.row.index; row <= endCellCoord.row.index; row++) {
+        const rowData: any[] = [];
+        for (let col = startCellCoord.column.index; col <= endCellCoord.column.index; col++) {
+          const cell = spreadsheetData[row]?.[col];
+          let value = cell?.value;
+          if (typeof value === 'string' && value.startsWith('=')) {
+            const result = parser.parse(value.substring(1));
+            rowData.push(result.error ? 0 : result.result);
+          } else {
+            rowData.push(Number(value) || value || 0);
+          }
+        }
+        fragment.push(rowData);
+      }
+      done(fragment);
+    });
 
-  const evaluateGrid = (grid: any[][]) => {
-    if (!grid || !Array.isArray(grid)) return [];
-    return grid.map((row, rIdx) => 
-      row.map((cell, cIdx) => {
+    parser.setFunction('RANK', (params) => {
+      if (params.length < 2) return 0;
+      const value = params[0];
+      const range = params[1];
+      if (!Array.isArray(range)) return 0;
+      const values = range.flat().filter(v => typeof v === 'number').sort((a, b) => b - a);
+      const rank = values.indexOf(value) + 1;
+      return rank > 0 ? rank : 0;
+    });
+
+    return parser;
+  }, [spreadsheetData]);
+
+  const evaluatedData = React.useMemo(() => {
+    if (!spreadsheetData || !Array.isArray(spreadsheetData)) return [];
+    return spreadsheetData.map((row) => 
+      row.map((cell) => {
         if (cell && typeof cell.value === 'string' && cell.value.startsWith('=')) {
           const result = formulaParser.parse(cell.value.substring(1));
           return { ...cell, displayValue: result.error ? '#ERR' : result.result };
@@ -320,7 +320,7 @@ Kamabigus`
         return cell || { value: "" };
       })
     );
-  };
+  }, [spreadsheetData, formulaParser]);
 
   const handleSpreadsheetChange = (newData: any) => {
     setSpreadsheetData(newData);
@@ -331,8 +331,20 @@ Kamabigus`
     setSpreadsheetData([...spreadsheetData, newRow]);
   };
 
+  const removeRow = () => {
+    if (spreadsheetData.length > 1) {
+      setSpreadsheetData(spreadsheetData.slice(0, -1));
+    }
+  };
+
   const addColumn = () => {
     setSpreadsheetData(spreadsheetData.map(row => [...row, { value: "" }]));
+  };
+
+  const removeColumn = () => {
+    if (spreadsheetData[0].length > 1) {
+      setSpreadsheetData(spreadsheetData.map(row => row.slice(0, -1)));
+    }
   };
 
   const handleImportExcelToSpreadsheet = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1245,8 +1257,14 @@ Kamabigus`
                       <button onClick={addRow} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-xs font-bold flex items-center gap-2">
                         <Plus className="h-3 w-3" /> Baris
                       </button>
+                      <button onClick={removeRow} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all text-xs font-bold flex items-center gap-2">
+                        <Trash2 className="h-3 w-3" /> Baris
+                      </button>
                       <button onClick={addColumn} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-xs font-bold flex items-center gap-2">
                         <Plus className="h-3 w-3" /> Kolom
+                      </button>
+                      <button onClick={removeColumn} className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all text-xs font-bold flex items-center gap-2">
+                        <Trash2 className="h-3 w-3" /> Kolom
                       </button>
                       <label className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all text-xs font-bold flex items-center gap-2 cursor-pointer">
                         <Upload className="h-3 w-3" /> Import Excel
@@ -1262,7 +1280,7 @@ Kamabigus`
                   </div>
                   <div className="p-4 admin-spreadsheet overflow-auto max-h-[600px] spreadsheet-container">
                     <Spreadsheet 
-                      data={evaluateGrid(spreadsheetData)} 
+                      data={evaluatedData} 
                       onChange={handleSpreadsheetChange}
                     />
                   </div>
