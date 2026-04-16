@@ -1,0 +1,129 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: regu
+    // Fields: nama, pangkalan, kategori, nomorTenda, pinru, wapinru, anggota
+    //
+    // Collection: lomba
+    // Fields: nama, bidangLomba, hari, bobot, kategori
+    //
+    // Collection: nilai
+    // Fields: reguId, lombaId, p1, p2, p3, p4, score
+    //
+    // Collection: berita
+    // Fields: title, content, mediaUrl, mediaType, authorId, authorName, authorEmail, authorPhoto, likes, timestamp
+    //
+    // Collection: komentar
+    // Fields: postId, author, authorId, authorEmail, authorPhoto, content, timestamp
+    //
+    // Collection: dokumen
+    // Fields: name, url, timestamp
+    //
+    // Collection: settings
+    // Fields: isLocked, lockedCategories, marqueeText, adminEmails, aboutContent, aboutImage
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      let isHardcodedAdmin = request.auth.token.email == "pramukapattimura@gmail.com";
+      let hasGlobalSettings = exists(/databases/$(database)/documents/settings/global);
+      let isConfigAdmin = hasGlobalSettings && 
+        get(/databases/$(database)/documents/settings/global).data.adminEmails != null && 
+        request.auth.token.email in get(/databases/$(database)/documents/settings/global).data.adminEmails;
+      
+      return isAuthenticated() && (isHardcodedAdmin || isConfigAdmin);
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidString(val, min, max) {
+      return val is string && val.size() >= min && val.size() <= max;
+    }
+
+    function isValidUrl(url) {
+      return url is string && (url.matches("^https://.*") || url.matches("^http://.*") || url == "");
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    // Regu
+    match /regu/{reguId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Lomba
+    match /lomba/{lombaId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Nilai
+    match /nilai/{nilaiId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Berita (Posts)
+    match /berita/{beritaId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && (
+        request.resource.data.authorId == request.auth.uid || 
+        isAdmin()
+      );
+      allow update: if isAuthenticated() && (
+        // Allow owner to update content/media
+        (request.resource.data.authorId == resource.data.authorId && request.auth.uid == resource.data.authorId) ||
+        // Allow anyone to update likes
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']))
+      );
+      allow delete: if isAdmin() || (isAuthenticated() && request.auth.uid == resource.data.authorId);
+    }
+
+    // Komentar
+    match /komentar/{komentarId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && 
+        request.resource.data.authorId == request.auth.uid &&
+        isValidString(request.resource.data.content, 1, 1000);
+      allow delete: if isAdmin() || (isAuthenticated() && request.auth.uid == resource.data.authorId);
+    }
+
+    // Settings
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Dokumen
+    match /dokumen/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Test Connection
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}

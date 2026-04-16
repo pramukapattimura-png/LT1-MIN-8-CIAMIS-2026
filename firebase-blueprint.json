@@ -1,0 +1,153 @@
+{
+  "entities": {
+    "Regu": {
+      "title": "Regu",
+      "description": "Data regu peserta lomba",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nama": { "type": "string" },
+        "pangkalan": { "type": "string" },
+        "kategori": { 
+          "type": "string",
+          "enum": ["SD Putra", "SD Putri", "SMP Putra", "SMP Putri"]
+        },
+        "nomorTenda": { "type": "string" },
+        "pinru": { "type": "string" },
+        "wapinru": { "type": "string" },
+        "anggota": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["nama", "pangkalan", "kategori"]
+    },
+    "Lomba": {
+      "title": "Lomba",
+      "description": "Data jenis perlombaan",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nama": { "type": "string" },
+        "bidangLomba": { "type": "string" },
+        "hari": { "type": "number" },
+        "bobot": { "type": "number" },
+        "kategori": { 
+          "type": "string",
+          "enum": ["SD Putra", "SD Putri", "SMP Putra", "SMP Putri"]
+        }
+      },
+      "required": ["nama", "hari", "kategori"]
+    },
+    "Nilai": {
+      "title": "Nilai",
+      "description": "Data nilai regu per lomba",
+      "type": "object",
+      "properties": {
+        "reguId": { "type": "string" },
+        "lombaId": { "type": "string" },
+        "p1": { "type": "number" },
+        "p2": { "type": "number" },
+        "p3": { "type": "number" },
+        "p4": { "type": "number" },
+        "score": { "type": "number" }
+      },
+      "required": ["reguId", "lombaId", "score"]
+    },
+    "Komentar": {
+      "title": "Komentar",
+      "description": "Komentar pengunjung",
+      "type": "object",
+      "properties": {
+        "postId": { "type": "string" },
+        "author": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorEmail": { "type": "string" },
+        "authorPhoto": { "type": "string" },
+        "content": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["author", "authorId", "content", "timestamp"]
+    },
+    "Berita": {
+      "title": "Berita",
+      "description": "Berita dan dokumentasi",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "mediaUrl": { "type": "string" },
+        "mediaType": { "type": "string", "enum": ["image", "video"] },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorEmail": { "type": "string" },
+        "authorPhoto": { "type": "string" },
+        "likes": { "type": "array", "items": { "type": "string" } },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["content", "timestamp", "authorId"]
+    },
+    "AppConfig": {
+      "title": "AppConfig",
+      "description": "Global application settings",
+      "type": "object",
+      "properties": {
+        "isLocked": { "type": "boolean" },
+        "lockedCategories": { "type": "object" },
+        "marqueeText": { "type": "string" },
+        "adminEmails": { "type": "array", "items": { "type": "string" } },
+        "aboutContent": { "type": "string" },
+        "aboutImage": { "type": "string" }
+      }
+    },
+    "RekapNilai": {
+      "title": "RekapNilai",
+      "description": "Data rekap nilai dalam bentuk grid spreadsheet",
+      "type": "object",
+      "properties": {
+        "grid": { "type": "array", "items": { "type": "array", "items": { "type": "object" } } },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Laporan": {
+      "title": "Laporan",
+      "description": "Data laporan dalam bentuk grid spreadsheet",
+      "type": "object",
+      "properties": {
+        "grid": { "type": "array", "items": { "type": "array", "items": { "type": "object" } } },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/regu": {
+      "schema": "Regu",
+      "description": "Koleksi data regu"
+    },
+    "/lomba": {
+      "schema": "Lomba",
+      "description": "Koleksi data lomba"
+    },
+    "/nilai": {
+      "schema": "Nilai",
+      "description": "Koleksi data nilai"
+    },
+    "/komentar": {
+      "schema": "Komentar",
+      "description": "Koleksi komentar"
+    },
+    "/berita": {
+      "schema": "Berita",
+      "description": "Koleksi berita"
+    },
+    "/settings": {
+      "schema": "AppConfig",
+      "description": "Global application settings"
+    },
+    "/settings/rekap_{category}": {
+      "schema": "RekapNilai",
+      "description": "Rekap nilai per kategori"
+    },
+    "/settings/laporan": {
+      "schema": "Laporan",
+      "description": "Laporan kegiatan"
+    }
+  }
+}
