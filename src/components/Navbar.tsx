@@ -66,7 +66,7 @@ export default function Navbar() {
             <div className="flex flex-col justify-center">
               <div className="flex items-baseline gap-1.5 sm:gap-3">
                 <span className="text-xl sm:text-3xl font-black text-white tracking-tighter leading-none inline-block w-[33.7px] h-[20px] flex items-center justify-center">LT 1</span>
-                <span className="text-[#e6271e] text-[8px] sm:text-xs font-bold uppercase tracking-[0.15em] sm:tracking-[0.4em] whitespace-nowrap">
+                <span className="text-[#e6271e] text-[8px] sm:text-xs font-bold uppercase tracking-[0.15em] sm:tracking-[0.4em] whitespace-nowrap inline-block scale-y-[2.0] origin-bottom">
                   MIN 8 CIAMIS
                 </span>
               </div>
