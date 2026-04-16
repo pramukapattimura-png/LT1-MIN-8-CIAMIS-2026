@@ -41,13 +41,13 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      let isHardcodedAdmin = request.auth.token.email == "pramukapattimura@gmail.com";
-      let hasGlobalSettings = exists(/databases/$(database)/documents/settings/global);
-      let isConfigAdmin = hasGlobalSettings && 
-        get(/databases/$(database)/documents/settings/global).data.adminEmails != null && 
-        request.auth.token.email in get(/databases/$(database)/documents/settings/global).data.adminEmails;
-      
-      return isAuthenticated() && (isHardcodedAdmin || isConfigAdmin);
+      return isAuthenticated() && (
+        request.auth.token.email == "pramukapattimura@gmail.com" ||
+        request.auth.token.email == "pramuka.pattimura@gmail.com" ||
+        (exists(/databases/$(database)/documents/settings/global) && 
+         get(/databases/$(database)/documents/settings/global).data.adminEmails != null && 
+         request.auth.token.email in get(/databases/$(database)/documents/settings/global).data.adminEmails)
+      );
     }
 
     function isOwner(userId) {
@@ -122,7 +122,7 @@ service cloud.firestore {
     }
 
     // Test Connection
-    match /test/connection {
+    match /test/{docId} {
       allow read: if true;
     }
   }

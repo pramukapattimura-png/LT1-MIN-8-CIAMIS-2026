@@ -5,7 +5,8 @@ import { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } fr
 import firebaseConfig from '../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, (firebaseConfig as any).firestoreDatabaseId || '(default)');
+export const db = getFirestore(app); // Use (default) database as primary for rules compatibility
+// export const db = getFirestore(app, (firebaseConfig as any).firestoreDatabaseId || '(default)');
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 console.log('Firebase Storage initialized with bucket:', storage.app.options.storageBucket);

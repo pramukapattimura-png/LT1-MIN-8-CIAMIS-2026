@@ -141,7 +141,7 @@ export default function Login() {
               </div>
               <div className="space-y-2">
                 <p className="text-[8px] text-gray-500 font-bold uppercase tracking-tight">
-                  Jika Anda adalah panitia namun belum bisa masuk ke Dashboard, silakan hubungi Admin Utama (pramukapattimura@gmail.com) untuk menambahkan email Anda ke daftar akses.
+                  Jika Anda adalah panitia namun belum bisa masuk ke Dashboard, silakan hubungi Admin Utama (pramuka.pattimura@gmail.com) untuk menambahkan email Anda ke daftar akses.
                 </p>
                 <ul className="text-[8px] text-gray-500 font-bold uppercase tracking-tight space-y-1 list-disc pl-4">
                   <li>Pastikan browser mengizinkan popup</li>

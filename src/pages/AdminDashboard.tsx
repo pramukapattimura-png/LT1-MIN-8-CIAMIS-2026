@@ -80,7 +80,7 @@ export default function AdminDashboard() {
     
     const user = auth.currentUser;
     const checkAdmin = () => {
-      const isHardcodedAdmin = user.email === 'pramukapattimura@gmail.com';
+      const isHardcodedAdmin = user.email === 'pramukapattimura@gmail.com' || user.email === 'pramuka.pattimura@gmail.com';
       const isConfigAdmin = config?.adminEmails?.includes(user.email || '');
       
       if (isHardcodedAdmin || isConfigAdmin) {

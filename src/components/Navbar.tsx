@@ -31,7 +31,7 @@ export default function Navbar() {
 
   const isAdmin = useMemo(() => {
     if (!user) return false;
-    if (user.email === 'pramukapattimura@gmail.com') return true;
+    if (user.email === 'pramukapattimura@gmail.com' || user.email === 'pramuka.pattimura@gmail.com') return true;
     if (!config || !config.adminEmails) return false;
     return config.adminEmails.includes(user.email || '');
   }, [user, config]);
