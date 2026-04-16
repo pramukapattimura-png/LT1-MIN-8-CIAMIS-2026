@@ -63,11 +63,14 @@ export default function Navbar() {
                 referrerPolicy="no-referrer"
               />
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg sm:text-2xl font-black text-white tracking-tighter leading-none">
-                LT 1 <span className="text-gray-400 text-[10px] sm:text-sm inline-block scale-[1.2] sm:scale-[2.0] origin-left ml-2 sm:ml-4">PANGKALAN MIN 8 CIAMIS</span>
-              </span>
-              <span className="text-[8px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mt-0.5">
+            <div className="flex flex-col justify-center">
+              <div className="flex items-baseline gap-1.5 sm:gap-3">
+                <span className="text-xl sm:text-3xl font-black text-white tracking-tighter leading-none inline-block w-[33.7px] h-[20px] flex items-center justify-center">LT 1</span>
+                <span className="text-[#e6271e] text-[8px] sm:text-xs font-bold uppercase tracking-[0.15em] sm:tracking-[0.4em] whitespace-nowrap">
+                  MIN 8 CIAMIS
+                </span>
+              </div>
+              <span className="text-[7px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mt-0.5">
                 {" 18 - 19 APRIL 2026 "}
               </span>
             </div>
