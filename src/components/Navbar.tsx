@@ -65,7 +65,7 @@ export default function Navbar() {
             </div>
             <div className="flex flex-col">
               <span className="text-lg sm:text-2xl font-black text-white tracking-tighter leading-none">
-                LT 1 <span className="text-gray-400 text-xs sm:text-sm">PANGKALAN MIN 8 CIAMIS</span>
+                LT 1 <span className="text-gray-400 text-xs sm:text-sm inline-block scale-[2.0] origin-left ml-4">PANGKALAN MIN 8 CIAMIS</span>
               </span>
               <span className="text-[8px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mt-0.5">
                 {" 18 - 19 APRIL 2026 "}

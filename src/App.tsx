@@ -29,7 +29,7 @@ export default function App() {
                 </div>
                 <div className="w-full h-64 sm:h-80 rounded-3xl overflow-hidden border border-gray-800 bg-gray-900 shadow-2xl relative group">
                   <iframe
-                    src="https://maps.google.com/maps?q=-7.1754470,108.3879570&t=k&z=17&ie=UTF8&iwloc=&output=embed"
+                    src="https://maps.google.com/maps?q=-7.17365846490427,108.42382690801668&t=k&z=17&ie=UTF8&iwloc=&output=embed"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
