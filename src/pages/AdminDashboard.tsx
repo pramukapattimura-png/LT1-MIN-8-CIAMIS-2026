@@ -155,10 +155,11 @@ export default function AdminDashboard() {
 Salam Pramuka
 Kakak - Kakak pembina pramuka semua dan seluruh pramuka di pangkalan MIN 8 Ciamis dan yang berada diseluruh indonesia, Pangkalan MIN 8 Ciamis pada tahun 2026 ini akan menyelenggarakan LT1 lomba tingkat 1 pramuka penggalang. platform ini kami sediakan untuk memberikan akses informasi secara transparan mulai dari persiapan sampai pasca kegiatan. untuk itu silahkan kakak kakak update untuk mendapatkan informasi dan bersilaturahmi dengan sesama pramuka yang berada di kwarcab ciamis.
 
-kami menyadari pasti ada kekurangan yang perlu dibenahi agar kegiatan LT1 ini dapat mendekati sempurna, kritik dan saran kami harapkan agar menjadi bahan berbenah bagi kami dari pramuka pangkalan MIN 8 Ciamis, pramuka ciamis atau pramuka diseluruh indonesia.
+kami menyadari pasti ada kekurangan yang perlu di benahi agar kegiatan LT1 ini dapat mendekati sempurna, kritik dan saran kami harapkan agar menjadi bahan berbenah bagi kami dari pramuka pangkalan MIN 8 Ciamis, pramuka ciamis atau pramuka diseluruh indonesia.
 
 Kepala MIN 8 Ciamis
-Kamabigus`
+Kamabigus`,
+          adminEmails: ['pramukapattimura@gmail.com', 'pramuka.pattimura@gmail.com']
         };
         setDoc(doc(db, 'settings', 'global'), initialConfig).catch(error => {
           handleFirestoreError(error, OperationType.WRITE, 'settings/global');

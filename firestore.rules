@@ -42,10 +42,10 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() && (
-        request.auth.token.email == "pramukapattimura@gmail.com" ||
-        request.auth.token.email == "pramuka.pattimura@gmail.com" ||
+        (request.auth.token.email == "pramukapattimura@gmail.com" || 
+         request.auth.token.email == "pramuka.pattimura@gmail.com") && request.auth.token.email_verified == true ||
         (exists(/databases/$(database)/documents/settings/global) && 
-         get(/databases/$(database)/documents/settings/global).data.adminEmails != null && 
+         get(/databases/$(database)/documents/settings/global).data.adminEmails is list && 
          request.auth.token.email in get(/databases/$(database)/documents/settings/global).data.adminEmails)
       );
     }
