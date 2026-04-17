@@ -80,8 +80,9 @@ export default function AdminDashboard() {
     
     const user = auth.currentUser;
     const checkAdmin = () => {
-      const isHardcodedAdmin = user.email === 'pramukapattimura@gmail.com' || user.email === 'pramuka.pattimura@gmail.com';
-      const isConfigAdmin = config?.adminEmails?.includes(user.email || '');
+      const userEmail = user.email?.toLowerCase() || '';
+      const isHardcodedAdmin = userEmail === 'pramukapattimura@gmail.com' || userEmail === 'pramuka.pattimura@gmail.com';
+      const isConfigAdmin = config?.adminEmails?.map(e => e.toLowerCase()).includes(userEmail);
       
       if (isHardcodedAdmin || isConfigAdmin) {
         setIsAdmin(true);
@@ -535,7 +536,7 @@ Kamabigus`,
   };
 
   const handleUpdateMarquee = async () => {
-    const emailList = adminEmails.split(',').map(e => e.trim()).filter(Boolean);
+    const emailList = adminEmails.split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
     await setDoc(doc(db, 'settings', 'global'), { 
       marqueeText,
       aboutContent,

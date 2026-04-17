@@ -31,9 +31,10 @@ export default function Navbar() {
 
   const isAdmin = useMemo(() => {
     if (!user) return false;
-    if (user.email === 'pramukapattimura@gmail.com' || user.email === 'pramuka.pattimura@gmail.com') return true;
+    const userEmail = user.email?.toLowerCase() || '';
+    if (userEmail === 'pramukapattimura@gmail.com' || userEmail === 'pramuka.pattimura@gmail.com') return true;
     if (!config || !config.adminEmails) return false;
-    return config.adminEmails.includes(user.email || '');
+    return config.adminEmails.map(e => e.toLowerCase()).includes(userEmail);
   }, [user, config]);
 
   useEffect(() => {
