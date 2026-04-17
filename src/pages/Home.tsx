@@ -541,7 +541,7 @@ export default function Home() {
                 {grid[0]?.map((cell, i) => {
                   const isFreeze = cell.value?.toString().toLowerCase().includes('tenda') || i === 0 || i === 1;
                   const headerValue = cell.value?.toString().toLowerCase() || "";
-                  const isNameOrPangkalan = headerValue.includes('nama') || headerValue.includes('pangkalan');
+                  const isNameOrPangkalan = headerValue.includes('nama') || headerValue.includes('pangkalan') || i === 1;
                   return (
                     <th key={i} className={cn(
                       "px-6 py-3 border-r border-gray-100 last:border-r-0 whitespace-nowrap",
@@ -560,7 +560,7 @@ export default function Home() {
                   {row.map((cell, cIdx) => {
                     const isFreeze = grid[0]?.[cIdx]?.value?.toString().toLowerCase().includes('tenda') || cIdx === 0 || cIdx === 1;
                     const headerValue = grid[0]?.[cIdx]?.value?.toString().toLowerCase() || "";
-                    const isNameOrPangkalan = headerValue.includes('nama') || headerValue.includes('pangkalan');
+                    const isNameOrPangkalan = headerValue.includes('nama') || headerValue.includes('pangkalan') || cIdx === 1;
                     return (
                       <td key={cIdx} className={cn(
                         "px-6 py-3 border-r border-gray-100 last:border-r-0 whitespace-nowrap",
