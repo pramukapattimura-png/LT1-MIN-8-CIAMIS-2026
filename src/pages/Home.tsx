@@ -484,7 +484,9 @@ export default function Home() {
       const cell = grid[row.index]?.[column.index];
       let value = cell?.value;
       if (typeof value === 'string' && value.startsWith('=')) {
-        const result = parser.parse(value.substring(1));
+        // Pre-process formula to support semicolon as separator (common in some locales)
+        const formula = value.substring(1).replace(/([A-Z]+\d+);([A-Z]+\d+)/gi, '$1:$2').replace(/;/g, ',');
+        const result = parser.parse(formula);
         done(result.error ? 0 : result.result);
       } else {
         done(Number(value) || value || 0);
@@ -499,7 +501,9 @@ export default function Home() {
           const cell = grid[row]?.[col];
           let value = cell?.value;
           if (typeof value === 'string' && value.startsWith('=')) {
-            const result = parser.parse(value.substring(1));
+            // Pre-process formula to support semicolon as separator
+            const formula = value.substring(1).replace(/([A-Z]+\d+);([A-Z]+\d+)/gi, '$1:$2').replace(/;/g, ',');
+            const result = parser.parse(formula);
             rowData.push(result.error ? 0 : result.result);
           } else {
             rowData.push(Number(value) || value || 0);
@@ -526,7 +530,9 @@ export default function Home() {
 
     const getCellValue = (cell: any) => {
       if (typeof cell?.value === 'string' && cell.value.startsWith('=')) {
-        const result = parser.parse(cell.value.substring(1));
+        // Pre-process formula to support semicolon as separator
+        const formula = cell.value.substring(1).replace(/([A-Z]+\d+);([A-Z]+\d+)/gi, '$1:$2').replace(/;/g, ',');
+        const result = parser.parse(formula);
         return result.error ? '#ERR' : result.result;
       }
       return (cell?.value !== undefined && cell?.value !== null) ? cell.value : "";

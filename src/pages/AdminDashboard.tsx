@@ -278,7 +278,9 @@ Kamabigus`,
       const cell = spreadsheetDataRef.current[row.index]?.[column.index];
       let value = cell?.value;
       if (typeof value === 'string' && value.startsWith('=')) {
-        const result = parser.parse(value.substring(1));
+        // Pre-process formula to support semicolon as separator (common in some locales)
+        const formula = value.substring(1).replace(/([A-Z]+\d+);([A-Z]+\d+)/gi, '$1:$2').replace(/;/g, ',');
+        const result = parser.parse(formula);
         done(result.error ? 0 : result.result);
       } else {
         done(Number(value) || value || 0);
@@ -293,7 +295,9 @@ Kamabigus`,
           const cell = spreadsheetDataRef.current[row]?.[col];
           let value = cell?.value;
           if (typeof value === 'string' && value.startsWith('=')) {
-            const result = parser.parse(value.substring(1));
+            // Pre-process formula to support semicolon as separator
+            const formula = value.substring(1).replace(/([A-Z]+\d+);([A-Z]+\d+)/gi, '$1:$2').replace(/;/g, ',');
+            const result = parser.parse(formula);
             rowData.push(result.error ? 0 : result.result);
           } else {
             rowData.push(Number(value) || value || 0);
@@ -322,7 +326,9 @@ Kamabigus`,
     return spreadsheetData.map((row) => 
       row.map((cell) => {
         if (cell && typeof cell.value === 'string' && cell.value.startsWith('=')) {
-          const result = formulaParser.parse(cell.value.substring(1));
+          // Pre-process formula to support semicolon as separator
+          const formula = cell.value.substring(1).replace(/([A-Z]+\d+);([A-Z]+\d+)/gi, '$1:$2').replace(/;/g, ',');
+          const result = formulaParser.parse(formula);
           return { ...cell, displayValue: result.error ? '#ERR' : result.result };
         }
         return cell || { value: "" };
@@ -1358,6 +1364,11 @@ Kamabigus`,
                     <Spreadsheet 
                       data={evaluatedData} 
                       onChange={handleSpreadsheetChange}
+                      DataViewer={({ cell }) => (
+                        <span className="text-xs font-medium">
+                          {cell?.displayValue !== undefined ? cell.displayValue : cell?.value}
+                        </span>
+                      )}
                     />
                   </div>
                   <p className="p-4 text-[10px] text-gray-400 font-medium italic border-t border-gray-100">
