@@ -26,7 +26,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'nilai' | 'berita' | 'settings'>('nilai');
   const [subTab, setSubTab] = useState<'rekap' | 'regu' | 'lomba' | 'dokumen'>('rekap');
   const [spreadsheetData, setSpreadsheetData] = useState<any[][]>(DEFAULT_REKAP_GRID);
-  const [selectedKategori, setSelectedKategori] = useState<Kategori>('SD Putra');
+  const [selectedKategori, setSelectedKategori] = useState<Kategori>('LOMBA REGU');
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 

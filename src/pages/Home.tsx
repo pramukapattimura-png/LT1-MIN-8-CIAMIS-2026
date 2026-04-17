@@ -528,7 +528,7 @@ export default function Home() {
         const result = parser.parse(cell.value.substring(1));
         return result.error ? '#ERR' : result.result;
       }
-      return cell?.value || "";
+      return (cell?.value !== undefined && cell?.value !== null) ? cell.value : "";
     };
 
     return (
@@ -910,7 +910,7 @@ export default function Home() {
                 </div>
               )}
 
-              {categories.slice(1).map(cat => {
+              {categories.filter(cat => cat !== 'Semua').map(cat => {
                 const grid = rekapData[cat as Kategori];
                 if (!grid || grid.length <= 1) return null;
 
